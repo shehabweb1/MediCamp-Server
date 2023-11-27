@@ -11,10 +11,6 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use(cors());
 
-
-
-
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@learning.axf2sgn.mongodb.net/?retryWrites=true&w=majority`;
 
 const client = new MongoClient(uri, {
@@ -32,11 +28,12 @@ async function run() {
     
     const database = client.db("medicamp")
     const usersCollection = database.collection("users");
+    const campsCollection = database.collection("camps");
 
 
     app.post('/jwt', async(req, res)=>{
       const user = req.body;
-      const token = jwt.sign(user, process.env.ACCESS_TOKEN, {expiresIn: 604800})
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN, {expiresIn: 3600000})
       res.send({token});
     });
 
@@ -87,6 +84,16 @@ async function run() {
       res.send(result);
     });
 
+    app.post('/camps', async(req, res) => {
+      const user = req.body;
+      const result = await campsCollection.insertOne(user);
+      res.send(result);
+    });
+
+    app.get('/camps', async(req, res) => {
+      const result = await campsCollection.find().toArray();
+      res.send(result)
+    });
 
 
     // await client.db("admin").command({ ping: 1 });
