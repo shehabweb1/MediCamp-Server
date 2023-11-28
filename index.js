@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -94,6 +94,40 @@ async function run() {
       const result = await campsCollection.find().toArray();
       res.send(result)
     });
+
+    app.get('/camps/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await campsCollection.findOne(query);
+      res.send(result)
+    });
+
+    app.patch('/camps/:id', verifyToken, async(req, res) =>{
+      const data = req.body;
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)}
+      const updateDoc = {
+        $set: {
+          camp_name: data.camp_name,
+          date: data.date,
+          camp_fees: data.camp_fees,
+          location: data.location,
+          service: data.service,        
+          healthcare: data.healthcare,        
+          audience: data.audience,        
+          description: data.description,        
+        }
+      }
+      const result = await campsCollection.updateOne(filter, updateDoc);
+      res.send(result)
+    })
+
+    app.delete('/camps/:id', verifyToken, async(req, res) =>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await campsCollection.deleteOne(query );
+      res.send(result)
+    })
 
 
     // await client.db("admin").command({ ping: 1 });
