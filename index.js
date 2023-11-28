@@ -102,6 +102,14 @@ async function run() {
       res.send(result)
     });
 
+
+    app.get('/camps/organizer/:email', verifyToken, async(req, res) => {
+      const email = req.params.email;
+      const query = {email : email};
+      const result = await campsCollection.find(query).toArray();
+      res.send(result)
+    });   
+
     app.patch('/camps/:id', verifyToken, async(req, res) =>{
       const data = req.body;
       const id = req.params.id;
