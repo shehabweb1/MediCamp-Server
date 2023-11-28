@@ -29,6 +29,7 @@ async function run() {
     const database = client.db("medicamp")
     const usersCollection = database.collection("users");
     const campsCollection = database.collection("camps");
+    const participantsCollection = database.collection("participants");
 
 
     app.post('/jwt', async(req, res)=>{
@@ -102,7 +103,6 @@ async function run() {
       res.send(result)
     });
 
-
     app.get('/camps/organizer/:email', verifyToken, async(req, res) => {
       const email = req.params.email;
       const query = {email : email};
@@ -137,6 +137,16 @@ async function run() {
       res.send(result)
     })
 
+    app.post('/participant', async(req,res) =>{
+      const participant = req.body;
+      const result = await participantsCollection.insertOne(participant);
+      res.send(result);
+    });
+
+    app.get('/participant', async(req, res) => {
+      const result = await participantsCollection.find().toArray();
+      res.send(result)
+    });
 
     // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
