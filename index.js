@@ -139,11 +139,19 @@ async function run() {
       res.send(result)
     })
 
-    app.post('/participant', async(req,res) =>{
-      const participant = req.body;
-      const result = await participantsCollection.insertOne(participant);
-      res.send(result);
-    });
+    app.post('/participant', verifyToken, async (req, res) => {
+    const participant = req.body;
+    const joinResult = await participantsCollection.insertOne(participant);
+
+    const query = { _id: new ObjectId(participant.camp._id) };
+
+    const updateDoc = {
+      $inc: { participants: 1},
+    };
+
+    const updateCamps = await campsCollection.updateOne(query, updateDoc);
+    res.send({joinResult, updateCamps});
+  });
 
     app.get('/participant', async(req, res) => {
       const result = await participantsCollection.find().toArray();
