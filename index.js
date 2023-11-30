@@ -32,6 +32,7 @@ async function run() {
     const campsCollection = database.collection("camps");
     const participantsCollection = database.collection("participants");
     const paymentCollection = database.collection("payment");
+    const feedbackCollection = database.collection("feedback");
 
 
     app.post('/jwt', async(req, res)=>{
@@ -140,18 +141,18 @@ async function run() {
     })
 
     app.post('/participant', verifyToken, async (req, res) => {
-    const participant = req.body;
-    const joinResult = await participantsCollection.insertOne(participant);
+      const participant = req.body;
+      const joinResult = await participantsCollection.insertOne(participant);
 
-    const query = { _id: new ObjectId(participant.camp._id) };
+      const query = { _id: new ObjectId(participant.camp._id) };
 
-    const updateDoc = {
-      $inc: { participants: 1},
-    };
+      const updateDoc = {
+        $inc: { participants: 1},
+      };
 
-    const updateCamps = await campsCollection.updateOne(query, updateDoc);
-    res.send({joinResult, updateCamps});
-  });
+      const updateCamps = await campsCollection.updateOne(query, updateDoc);
+      res.send({joinResult, updateCamps});
+    });
 
     app.get('/participant', async(req, res) => {
       const result = await participantsCollection.find().toArray();
@@ -171,6 +172,17 @@ async function run() {
       const result = await participantsCollection.deleteOne(query);
       res.send(result)
     })
+
+    app.post('/feedback', verifyToken, async (req, res) => {
+      const feedback = req.body;
+      const result = await feedbackCollection.insertOne(feedback);
+      res.send(result)
+    });
+
+    app.get('/feedback', async(req, res) => {
+      const result = await feedbackCollection.find().toArray();
+      res.send(result)
+    });
 
 
     // Payment
