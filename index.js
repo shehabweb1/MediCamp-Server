@@ -187,6 +187,17 @@ async function run() {
       res.send(result)
     });
 
+    app.post('/organizer', async (req, res) => {
+      const feedback = req.body;
+      const result = await organizerCollection.insertOne(feedback);
+      res.send(result)
+    });
+
+    app.get('/organizer', async(req, res) => {
+      const result = await organizerCollection.find().toArray();
+      res.send(result)
+    });
+
     app.post('/feedback', verifyToken, async (req, res) => {
       const feedback = req.body;
       const result = await feedbackCollection.insertOne(feedback);
