@@ -162,7 +162,7 @@ async function run() {
       const query = {_id: new ObjectId(id)}
       const result = await participantsCollection.deleteOne(query);
       res.send(result)
-    });
+    })
 
 
     // Payment
