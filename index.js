@@ -31,6 +31,8 @@ async function run() {
     const usersCollection = database.collection("users");
     const campsCollection = database.collection("camps");
     const participantsCollection = database.collection("participants");
+    const organizerCollection = database.collection("organizer");
+    const healthcareCollection = database.collection("healthcare");
     const paymentCollection = database.collection("payment");
     const feedbackCollection = database.collection("feedback");
 
@@ -173,6 +175,18 @@ async function run() {
       res.send(result)
     })
 
+
+    app.post('/healthcare', async (req, res) => {
+      const feedback = req.body;
+      const result = await healthcareCollection.insertOne(feedback);
+      res.send(result)
+    });
+
+    app.get('/healthcare', async(req, res) => {
+      const result = await healthcareCollection.find().toArray();
+      res.send(result)
+    });
+
     app.post('/feedback', verifyToken, async (req, res) => {
       const feedback = req.body;
       const result = await feedbackCollection.insertOne(feedback);
@@ -183,7 +197,6 @@ async function run() {
       const result = await feedbackCollection.find().toArray();
       res.send(result)
     });
-
 
     // Payment
     app.post('/create-payment-intent', async (req, res) => {
